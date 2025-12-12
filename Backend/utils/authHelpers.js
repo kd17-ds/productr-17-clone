@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 
 const OTP_LENGTH = process.env.OTP_LENGTH;
 const OTP_TTL_SECONDS = process.env.OTP_TTL_SECONDS;
-const SALT_ROUNDS = process.env.OTP_HASH_SALT_ROUNDS;
+const SALT_ROUNDS = parseInt(process.env.OTP_HASH_SALT_ROUNDS, 10);
 
 function normalizePhone(input, defaultCountry = "IN") {
   if (!input) return null;

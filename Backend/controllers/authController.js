@@ -1,5 +1,5 @@
-const User = require("../models/User");
-const Otp = require("../models/Otp");
+const User = require("../models/UserModel");
+const Otp = require("../models/OtpModel");
 const {
   normalizePhone,
   normalizeEmail,
