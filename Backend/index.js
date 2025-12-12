@@ -10,6 +10,7 @@ const dbUrl = process.env.MONGO_URL;
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const authRoutes = require("./routes/authRoutes");
 
 app.use(express.static(path.join(__dirname, "client", "dist")));
 app.set("trust proxy", 1);
@@ -24,6 +25,7 @@ app.use(
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use("/api/auth", authRoutes);
 
 // Serve index.html only for routes NOT starting with /api , basically for all frontend routes
 app.get(/^\/(?!api).*/, (req, res) => {
