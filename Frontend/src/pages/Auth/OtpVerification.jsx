@@ -103,7 +103,7 @@ export default function RightVerifyOtp() {
             localStorage.removeItem("pendingIdentifier");
             localStorage.removeItem("otp_resend_until");
             localStorage.setItem("user", JSON.stringify(res.data.user));
-            navigate("/dashboard");
+            navigate("/");
         } catch (err) {
             setError(err?.response?.data?.error || "Invalid OTP. Please try again.");
         } finally {
@@ -163,7 +163,7 @@ export default function RightVerifyOtp() {
                 <button
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="w-full py-3 rounded-md mt-3 bg-cards text-white font-medium disabled:opacity-60"
+                    className="w-full py-3 rounded-md mt-3 bg-cards text-white font-medium disabled:opacity-60 hover:cursor-pointer"
                 >
                     {loading ? "Verifying..." : "Enter your OTP"}
                 </button>
