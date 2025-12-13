@@ -52,6 +52,9 @@ export default function RightAuth() {
             const serverMsg = res?.data?.message || res?.data?.msg;
             if (serverMsg) setInfo(serverMsg);
 
+            const until = Date.now() + 30 * 1000;
+            localStorage.setItem("otp_resend_until", until.toString());
+
             localStorage.setItem("pendingIdentifier", identifier.trim());
             navigate("/verify-otp");
         } catch (err) {

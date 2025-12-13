@@ -3,8 +3,8 @@ const { parsePhoneNumberFromString } = require("libphonenumber-js");
 const validator = require("validator");
 const { v4: uuidv4 } = require("uuid");
 
-const OTP_LENGTH = process.env.OTP_LENGTH;
-const OTP_TTL_SECONDS = process.env.OTP_TTL_SECONDS;
+const OTP_LENGTH = parseInt(process.env.OTP_LENGTH, 10);
+const OTP_TTL_SECONDS = parseInt(process.env.OTP_TTL_SECONDS, 10);
 const SALT_ROUNDS = parseInt(process.env.OTP_HASH_SALT_ROUNDS, 10);
 
 function normalizePhone(input, defaultCountry = "IN") {

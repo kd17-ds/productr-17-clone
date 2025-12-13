@@ -10,29 +10,29 @@ const {
   compareOtpHash,
 } = require("../utils/authHelpers");
 const { sendEmail } = require("../utils/sendEmail");
-const RESEND_COOLDOWN = process.env.OTP_RESEND_COOLDOWN_SECONDS;
+const RESEND_COOLDOWN = parseInt(process.env.OTP_RESEND_COOLDOWN_SECONDS, 10);
 const { createSecretToken } = require("../utils/secretToken");
-const OTP_MAX_ATTEMPTS = process.env.OTP_MAX_ATTEMPTS;
+const OTP_MAX_ATTEMPTS = parseInt(process.env.OTP_MAX_ATTEMPTS, 10);
 
 module.exports.requestOtp = async (req, res) => {
   try {
     const { identifier } = req.body;
     if (!identifier)
-      return res.status(400).json({ ok: false, error: "identifier required" });
+      return res.status(400).json({ ok: false, error: "Input required" });
 
     const phone = normalizePhone(identifier);
     const email = normalizeEmail(identifier);
     if (!phone && !email) {
       return res
         .status(400)
-        .json({ ok: false, error: "identifier must be valid phone or email" });
+        .json({ ok: false, error: "Enter a valid phone or email" });
     }
     const normalized = phone || email;
 
     const recent = await Otp.findOne({
       identifier: normalized,
-      used: false,
     }).sort({ createdAt: -1 });
+
     if (recent) {
       const since = (Date.now() - recent.createdAt.getTime()) / 1000;
       if (since < RESEND_COOLDOWN) {
@@ -91,7 +91,7 @@ module.exports.verifyOtp = async (req, res) => {
     if (!identifier || !otp) {
       return res
         .status(400)
-        .json({ ok: false, error: "identifier and otp required" });
+        .json({ ok: false, error: "Email and otp required" });
     }
 
     const phone = normalizePhone(identifier);

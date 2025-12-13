@@ -1,12 +1,17 @@
 import { Routes, Route } from 'react-router-dom';
-import Auth from "./pages/Auth/Auth"
+import AuthLayout from "./layouts/AuthLayout";
+import RightAuth from './pages/Auth/RightAuth';
+import OtpVerification from './pages/Auth/OtpVerification';
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/login" element={<Auth />} />
-        <Route path="/signup" element={<Auth />} />
+        <Route element={<AuthLayout />}>
+          <Route path='/login' element={<RightAuth />} />
+          <Route path='/signup' element={<RightAuth />} />
+          <Route path='/verify-otp' element={<OtpVerification />} />
+        </Route>
       </Routes>
     </>
   )
