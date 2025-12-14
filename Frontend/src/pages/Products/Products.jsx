@@ -3,6 +3,9 @@ import { api } from "../../contexts/ApiContext";
 import ProductsGrid from "../../components/ProductGrid";
 import EmptyState from "../../components/EmptyState";
 import ProductModal from "../../components/ProductModal";
+import Toast from "../../utils/Toast";
+import DeleteConfirmModal from "../../components/DeleteConfirmModel";
+import useProductActions from "../../hooks/useProductActions";
 
 export default function Products() {
     const [products, setProducts] = useState([]);
@@ -10,6 +13,11 @@ export default function Products() {
     const [modalOpen, setModalOpen] = useState(false);
     const [mode, setMode] = useState("add");
     const [submitted, setSubmitted] = useState(false);
+    const [editingProductId, setEditingProductId] = useState(null);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [deletingProduct, setDeletingProduct] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [toast, setToast] = useState({ type: "", message: "" });
 
     const [formData, setFormData] = useState({
         name: "",
@@ -21,9 +29,10 @@ export default function Products() {
         isExchangeReturnEligible: "true",
     });
 
-    useEffect(() => {
-        fetchProducts();
-    }, []);
+    function showToast(type, message) {
+        setToast({ type, message });
+        setTimeout(() => setToast({ type: "", message: "" }), 3000);
+    }
 
     async function fetchProducts() {
         try {
@@ -35,9 +44,18 @@ export default function Products() {
         }
     }
 
+    const { togglePublish, deleteProduct, loadingId } =
+        useProductActions(fetchProducts, showToast);
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
     function handleAddProduct() {
         setMode("add");
         resetForm();
+        setEditingProductId(null);
+        setImageFile(null);
         setSubmitted(false);
         setModalOpen(true);
     }
@@ -48,15 +66,14 @@ export default function Products() {
 
     function handleChange(e) {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     }
 
     function handleEditProduct(product) {
         setMode("edit");
         setSubmitted(false);
+        setEditingProductId(product._id);
+        setImageFile(null);
         setFormData({
             name: product.name,
             type: product.type,
@@ -69,35 +86,54 @@ export default function Products() {
         setModalOpen(true);
     }
 
+    function handleDeleteClick(product) {
+        setDeletingProduct(product);
+        setDeleteModalOpen(true);
+    }
+
+    async function handleConfirmDelete() {
+        await deleteProduct(deletingProduct);
+        setDeleteModalOpen(false);
+        setDeletingProduct(null);
+    }
+
     async function handleSubmit(e) {
         e.preventDefault();
         setSubmitted(true);
 
         const form = e.target;
-
-        if (!form.checkValidity()) {
-            return;
-        }
+        if (!form.checkValidity()) return;
 
         try {
-            const payload = new FormData();
+            setLoading(true);
 
+            const payload = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
                 payload.append(key, value);
             });
 
-            if (imageFile) {
-                payload.append("image", imageFile);
-            }
+            if (imageFile) payload.append("image", imageFile);
 
             if (mode === "add") {
                 await api.post("/products/add", payload);
+                showToast("success", "Product added successfully");
+            } else {
+                await api.put(`/products/${editingProductId}`, payload);
+                showToast("success", "Product updated successfully");
             }
 
             setModalOpen(false);
+            setEditingProductId(null);
+            setImageFile(null);
             fetchProducts();
         } catch (err) {
-            console.error("Product submit failed:", err);
+            const msg =
+                err?.response?.data?.message ||
+                err?.response?.data?.error ||
+                "Something went wrong";
+            showToast("error", msg);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -128,17 +164,24 @@ export default function Products() {
             ) : (
                 <>
                     <div className="flex items-center justify-between mb-6">
-                        <h1 className="text-lg font-medium text-gray-800">Products</h1>
+                        <h1 className="text-2xl font-medium text-gray-800">
+                            Products
+                        </h1>
                         <button
                             onClick={handleAddProduct}
-                            className="text-sm text-blue-600 font-medium"
+                            className="text-xl text-gray-600 font-medium hover:cursor-pointer"
                         >
-                            + Add Product
+                            + &nbsp;Add Product
                         </button>
                     </div>
 
                     <div className="mt-6">
-                        <ProductsGrid products={products} onEdit={handleEditProduct} />
+                        <ProductsGrid
+                            products={products}
+                            onEdit={handleEditProduct}
+                            onTogglePublish={togglePublish}
+                            onDelete={handleDeleteClick}
+                        />
                     </div>
                 </>
             )}
@@ -148,10 +191,25 @@ export default function Products() {
                 mode={mode}
                 formData={formData}
                 submitted={submitted}
+                loading={loading}
                 onClose={() => setModalOpen(false)}
                 onChange={handleChange}
                 onFileChange={handleFileChange}
                 onSubmit={handleSubmit}
+            />
+
+            <DeleteConfirmModal
+                open={deleteModalOpen}
+                productName={deletingProduct?.name}
+                loading={loadingId === deletingProduct?._id}
+                onClose={() => setDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+            />
+
+            <Toast
+                type={toast.type}
+                message={toast.message}
+                onClose={() => setToast({ type: "", message: "" })}
             />
         </div>
     );

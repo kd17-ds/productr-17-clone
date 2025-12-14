@@ -4,6 +4,7 @@ export default function ProductModal({
     mode = "add",
     formData,
     submitted,
+    loading,
     onChange,
     onFileChange,
     onSubmit,
@@ -26,7 +27,8 @@ export default function ProductModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="text-gray-800 hover:text-gray-600"
+                        disabled={loading}
+                        className="text-gray-800 hover:text-gray-600 disabled:opacity-50"
                     >
                         ✕
                     </button>
@@ -222,7 +224,8 @@ export default function ProductModal({
                                 onClick={() =>
                                     document.getElementById("product-image-input").click()
                                 }
-                                className="mt-1 text-blue-600 font-medium hover:cursor-pointer"
+                                disabled={loading}
+                                className="mt-1 text-blue-600 font-medium hover:cursor-pointer disabled:opacity-60"
                             >
                                 Browse
                             </button>
@@ -269,9 +272,21 @@ export default function ProductModal({
                     <div className="flex justify-end pt-4 border-t border-gray-200">
                         <button
                             type="submit"
-                            className="h-9 px-4 text-sm rounded-md bg-gradient-to-b from-blue-900 to-blue-700 hover:cursor-pointer text-white hover:bg-blue-700 transition"
+                            disabled={loading}
+                            className="
+                                h-9 px-4 text-sm rounded-md
+                                bg-gradient-to-b from-blue-900 to-blue-700
+                                text-white hover:bg-blue-700 transition
+                                disabled:opacity-60
+                            "
                         >
-                            {mode === "add" ? "Create" : "Update"}
+                            {loading
+                                ? mode === "add"
+                                    ? "Creating..."
+                                    : "Updating..."
+                                : mode === "add"
+                                    ? "Create"
+                                    : "Update"}
                         </button>
                     </div>
                 </form>

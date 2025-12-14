@@ -7,11 +7,13 @@ export default function SideBar() {
         <div className="w-64 bg-[#090e1b] text-white flex flex-col">
             <div className="border-white/10 py-5 border-b">
                 <div className="px-6 ">
-                    <img
-                        src="/productrLogo2.png"
-                        alt="logo"
-                        className="mb-4"
-                    />
+                    <NavLink to={"/home"}>
+                        <img
+                            src="/productrLogo2.png"
+                            alt="logo"
+                            className="mb-4"
+                        />
+                    </NavLink >
                 </div>
 
                 <div className="px-3">
@@ -31,7 +33,7 @@ export default function SideBar() {
             </div>
 
             <nav className="flex-1 px-4 py-6 space-y-2">
-                <NavItem to="/" label="Home" Icon={FiHome} />
+                <NavItem to="/home" label="Home" Icon={FiHome} />
                 <NavItem to="/products" label="Products" Icon={FiBox} />
             </nav>
         </div>

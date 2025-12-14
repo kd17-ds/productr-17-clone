@@ -103,7 +103,7 @@ export default function RightVerifyOtp() {
             localStorage.removeItem("pendingIdentifier");
             localStorage.removeItem("otp_resend_until");
             localStorage.setItem("user", JSON.stringify(res.data.user));
-            navigate("/");
+            navigate("/home");
         } catch (err) {
             setError(err?.response?.data?.error || "Invalid OTP. Please try again.");
         } finally {
