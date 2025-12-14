@@ -9,7 +9,7 @@ export default function ProductCard({
     const isPublished = product.isPublished;
 
     return (
-        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-md hover:shadow-lg transition w-[350px]">
+        <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-md hover:shadow-lg transition ">
             {/* Image */}
             <div className="relative w-full h-44 bg-gray-50 border border-gray-300 rounded-lg overflow-hidden mb-4 flex items-center justify-center">
                 {product.image?.url ? (
