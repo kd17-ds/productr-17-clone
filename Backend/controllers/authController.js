@@ -46,6 +46,7 @@ module.exports.requestOtp = async (req, res) => {
     }
 
     const plainOtp = generateNumericOtp();
+    console.log("Generated OTP:", plainOtp);
     const codeHash = await hashOtp(plainOtp);
     const txId = makeTxId();
     const expiresAt = ttlDate();
@@ -70,6 +71,7 @@ module.exports.requestOtp = async (req, res) => {
     if (phone) {
       await sendSms(phone, message);
     } else {
+      console.log("📧 Sending OTP email to:", normalized);
       await sendEmail(
         normalized,
         "Your verification code",
